@@ -1,0 +1,97 @@
+from email import message
+from gc import callbacks
+
+import telebot
+from telebot import types
+from telebot.apihelper import send_message
+
+bot = telebot.TeleBot('7618745443:AAHb315qHE3E3Le5bFapyyhB_imUlCwWqgo')
+
+markup = types.InlineKeyboardMarkup()
+btn_1 = types.InlineKeyboardButton('▶️ Youtube', callback_data='dlyou')
+btn_2 = types.InlineKeyboardButton('📸 Instagram', callback_data='dlins')
+btn_3 = types.InlineKeyboardButton('🎶 TikTok', callback_data='dltik')
+markup.row(btn_1)
+markup.row(btn_2, btn_3)
+
+
+# markup_1 = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+# btn_1 = types.KeyboardButton('Загрузить 🎵')
+# btn_2 = types.KeyboardButton('Загрузить 🎥')
+# markup_1.row(btn_1, btn_2)
+
+markup_2 = types.InlineKeyboardMarkup()
+btn_1 = types.InlineKeyboardButton('360p 📹', callback_data='360p')
+btn_2 = types.InlineKeyboardButton('480p 📽', callback_data='480p')
+btn_3 = types.InlineKeyboardButton('720p 🎥', callback_data='720p')
+markup_2.add(btn_1, btn_2, btn_3)
+
+
+
+
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.send_message(message.chat.id,
+        f'<strong>Привет, {message.from_user.first_name}!</strong>'
+        f'\nЯ твой помощник по скачиванию контента.\nВыбери, из какой соцсети мы будем скачивать 🤖:',parse_mode='html',
+        reply_markup=markup
+    )
+@bot.message_handler(commands=['more'])
+def more(message):
+    bot.send_message(message.chat.id,
+        f'<strong>Выбрать другую социальную сеть</strong> 🤖:\n',parse_mode='html',
+        reply_markup=markup
+    )
+
+
+# @bot.callback_query_handler(func=lambda call: True)
+# def callback(call):
+#     # if call.data == 'dlyou':
+#         bot.send_message(call.message.chat.id,'Выберите формат',reply_markup=markup_1)
+#
+
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback(call):
+    if call.data == 'dlyou':
+        bot.edit_message_text('<b>▶️ YouTube\nОтправляйте ссылку...</b>',call.message.chat.id, call.message.message_id,parse_mode='html')
+    elif call.data == 'dlins':
+        bot.edit_message_text('<b>📸 Instagram\nОтправляйте ссылку...</b>',call.message.chat.id, call.message.message_id,parse_mode='html')
+    elif call.data == 'dltik':
+        bot.edit_message_text('<b>🎶 TikTok\nОтправляйте ссылку...</b>',call.message.chat.id, call.message.message_id,parse_mode='html')
+    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=markup_2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# @bot.message_handler(commands=['info'])
+# def info(message):
+#     bot.send_message(
+#         message.chat.id,
+#         f'<strong>Ваше имя: {message.from_user.first_name}\nID: {message.from_user.id}</strong>',
+#         parse_mode='html'
+#     )
+
+@bot.message_handler(func=lambda message: True)
+def unknown_message(message):
+    bot.send_message(
+        message.chat.id,
+        f'<strong>{message.from_user.first_name}, я пока что не умею общаться с тобой 😊, но в дальнейшем я уверен, что смогу научиться! 🚀</strong>',
+        parse_mode='html'
+    )
+
+
+bot.polling(none_stop=True)
